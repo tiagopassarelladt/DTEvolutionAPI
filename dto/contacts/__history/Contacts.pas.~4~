@@ -1,0 +1,143 @@
+unit Contacts;
+
+interface
+  uses 
+    RespContacts,
+    System.SysUtils,
+    Generics.Collections,
+    REST.Json.Types,
+    Rest.Json;
+
+type
+
+  TWhere = class
+  private
+  public
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TWhere;
+  end;
+
+  TContacts = class
+  private
+    FWhere: TWhere;
+    // Instance of TRespContacts
+    [JSONMarshalledAttribute(False)]
+    FRespContacts: TRespContacts;
+    // Store Last Response Message from StatusCode
+    [JSONMarshalledAttribute(False)]
+    FResponseMessage: string;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property where : TWhere       read FWhere write FWhere;
+    // Instance of TRespContacts
+    property RespContacts: TRespContacts read FRespContacts write FRespContacts;
+    // Get Last Response Message from StatusCode
+    property ResponseMessage: string       read FResponseMessage write FResponseMessage;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TContacts;
+    function APIExecute(BaseURL, Key, instancia: String): boolean;
+
+  end;
+
+implementation
+  uses 
+    System.Classes,
+    System.NetEncoding,
+    System.NetConsts,
+    System.Net.URLClient,
+    System.Net.HttpClient,
+    System.Net.HttpClientComponent;
+
+{TWhere}
+function TWhere.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TWhere.FromJsonString(const AJsonString: string): TWhere;
+begin
+  Result := TJson.JsonToObject<TWhere>(AJsonString);
+end;
+
+{TContacts}
+constructor TContacts.Create;
+begin
+  inherited;
+
+  FWhere := TWhere.Create;
+end;
+
+destructor TContacts.Destroy;
+begin
+  if Assigned(FWhere) then
+    FreeAndNil(FWhere);
+
+  if Assigned(FRespContacts) then
+    FreeAndNil(FRespContacts);
+
+  inherited;
+end;
+
+function TContacts.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TContacts.FromJsonString(const AJsonString: string): TContacts;
+begin
+  Result := TJson.JsonToObject<TContacts>(AJsonString);
+end;
+
+function TContacts.APIExecute(BaseURL, Key, instancia: String): boolean;
+var
+  HttpClient   : THttpClient;
+  LResponse    : IHttpResponse;
+  RequestBody  : TStringStream;
+  xURL_EXECUTE : string;
+  json         : String;
+begin
+    xURL_EXECUTE     := BaseURL + '/chat/findContacts/' + instancia;
+    json             := ' { ' +
+    ' "where": { ' +
+    '  ' +
+    ' } ' +
+    ' } ';
+
+    FResponseMessage := '';
+    HttpClient       := THTTPClient.Create;
+  try
+    {Add Body}
+    RequestBody := TStringStream.Create(json);
+
+    LResponse   := HttpClient.Post( xURL_EXECUTE,
+                                   RequestBody,nil,
+
+      TNetHeaders.Create(
+
+    {Add Headers}
+      TNameValuePair.Create('apikey', Key)
+                                 ));
+
+    {Execute method POST and return instance of TRespContacts}
+    FRespContacts := TRespContacts.FromJsonString(LResponse.ContentAsString);
+
+    Result := LResponse.StatusCode = 200;
+
+
+    if not LResponse.StatusCode in [200,201] then
+     raise Exception.Create( LResponse.ContentAsString );
+  except
+    on E:Exception do
+    begin
+      Result := False;
+      FResponseMessage := E.Message;
+      raise Exception.Create('Error Method TContacts.APIExecute'+ sLineBreak + E.Message); 
+    end;
+  end;
+end;
+
+end.

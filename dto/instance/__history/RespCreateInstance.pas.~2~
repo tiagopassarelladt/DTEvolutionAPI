@@ -1,0 +1,305 @@
+unit RespCreateInstance;
+
+interface
+  uses 
+    System.SysUtils,
+    Generics.Collections,
+    REST.Json.Types,
+    Rest.Json;
+
+type
+
+  TQrcode = class
+  private
+    FBase64: string;
+    FCode  : string;
+    FCount : Extended;
+  public
+    property base64 : string   read FBase64 write FBase64;
+    property code   : string   read FCode   write FCode;
+    property count  : Extended read FCount  write FCount;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TQrcode;
+  end;
+
+  TSettings = class
+  private
+    FAlways_online    : Boolean;
+    FGroups_ignore    : Boolean;
+    FMsg_call         : string;
+    FRead_messages    : Boolean;
+    FRead_status      : Boolean;
+    FReject_call      : Boolean;
+    FSync_full_history: Boolean;
+  public
+    property always_online     : Boolean read FAlways_online     write FAlways_online;
+    property groups_ignore     : Boolean read FGroups_ignore     write FGroups_ignore;
+    property msg_call          : string  read FMsg_call          write FMsg_call;
+    property read_messages     : Boolean read FRead_messages     write FRead_messages;
+    property read_status       : Boolean read FRead_status       write FRead_status;
+    property reject_call       : Boolean read FReject_call       write FReject_call;
+    property sync_full_history : Boolean read FSync_full_history write FSync_full_history;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TSettings;
+  end;
+
+  TTypebot = class
+  private
+    FEnabled: Boolean;
+  public
+    property enabled : Boolean read FEnabled write FEnabled;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TTypebot;
+  end;
+
+  TSqs = class
+  private
+  public
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TSqs;
+  end;
+
+  TRabbitmq = class
+  private
+  public
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TRabbitmq;
+  end;
+
+  TWebsocket = class
+  private
+  public
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TWebsocket;
+  end;
+
+  TWebhook = class
+  private
+  public
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TWebhook;
+  end;
+
+  THash = class
+  private
+    FApikey: string;
+  public
+    property apikey : string read FApikey write FApikey;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): THash;
+  end;
+
+  TInstance = class
+  private
+    FAccess_token_wa_business: string;
+    FInstanceId              : string;
+    FInstanceName            : string;
+    FStatus                  : string;
+  public
+    property access_token_wa_business : string read FAccess_token_wa_business write FAccess_token_wa_business;
+    property instanceId               : string read FInstanceId               write FInstanceId;
+    property instanceName             : string read FInstanceName             write FInstanceName;
+    property status                   : string read FStatus                   write FStatus;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TInstance;
+  end;
+
+  TRespCreateInstance = class
+  private
+    FHash     : THash;
+    FInstance : TInstance;
+    FQrcode   : TQrcode;
+    FRabbitmq : TRabbitmq;
+    FSettings : TSettings;
+    FSqs      : TSqs;
+    FTypebot  : TTypebot;
+    FWebhook  : TWebhook;
+    FWebsocket: TWebsocket;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property hash      : THash      read FHash      write FHash;
+    property instance  : TInstance  read FInstance  write FInstance;
+    property qrcode    : TQrcode    read FQrcode    write FQrcode;
+    property rabbitmq  : TRabbitmq  read FRabbitmq  write FRabbitmq;
+    property settings  : TSettings  read FSettings  write FSettings;
+    property sqs       : TSqs       read FSqs       write FSqs;
+    property typebot   : TTypebot   read FTypebot   write FTypebot;
+    property webhook   : TWebhook   read FWebhook   write FWebhook;
+    property websocket : TWebsocket read FWebsocket write FWebsocket;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TRespCreateInstance;
+  end;
+
+implementation
+
+{TQrcode}
+function TQrcode.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TQrcode.FromJsonString(const AJsonString: string): TQrcode;
+begin
+  Result := TJson.JsonToObject<TQrcode>(AJsonString);
+end;
+
+{TSettings}
+function TSettings.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TSettings.FromJsonString(const AJsonString: string): TSettings;
+begin
+  Result := TJson.JsonToObject<TSettings>(AJsonString);
+end;
+
+{TTypebot}
+function TTypebot.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TTypebot.FromJsonString(const AJsonString: string): TTypebot;
+begin
+  Result := TJson.JsonToObject<TTypebot>(AJsonString);
+end;
+
+{TSqs}
+function TSqs.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TSqs.FromJsonString(const AJsonString: string): TSqs;
+begin
+  Result := TJson.JsonToObject<TSqs>(AJsonString);
+end;
+
+{TRabbitmq}
+function TRabbitmq.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TRabbitmq.FromJsonString(const AJsonString: string): TRabbitmq;
+begin
+  Result := TJson.JsonToObject<TRabbitmq>(AJsonString);
+end;
+
+{TWebsocket}
+function TWebsocket.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TWebsocket.FromJsonString(const AJsonString: string): TWebsocket;
+begin
+  Result := TJson.JsonToObject<TWebsocket>(AJsonString);
+end;
+
+{TWebhook}
+function TWebhook.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TWebhook.FromJsonString(const AJsonString: string): TWebhook;
+begin
+  Result := TJson.JsonToObject<TWebhook>(AJsonString);
+end;
+
+{THash}
+function THash.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function THash.FromJsonString(const AJsonString: string): THash;
+begin
+  Result := TJson.JsonToObject<THash>(AJsonString);
+end;
+
+{TInstance}
+function TInstance.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TInstance.FromJsonString(const AJsonString: string): TInstance;
+begin
+  Result := TJson.JsonToObject<TInstance>(AJsonString);
+end;
+
+{TRespCreateInstance}
+constructor TRespCreateInstance.Create;
+begin
+  inherited;
+
+  FInstance  := TInstance.Create;
+  FHash      := THash.Create;
+  FWebhook   := TWebhook.Create;
+  FWebsocket := TWebsocket.Create;
+  FRabbitmq  := TRabbitmq.Create;
+  FSqs       := TSqs.Create;
+  FTypebot   := TTypebot.Create;
+  FSettings  := TSettings.Create;
+  FQrcode    := TQrcode.Create;
+end;
+
+destructor TRespCreateInstance.Destroy;
+begin
+  if Assigned(FInstance) then
+    FreeAndNil(FInstance);
+
+  if Assigned(FHash) then
+    FreeAndNil(FHash);
+
+  if Assigned(FWebhook) then
+    FreeAndNil(FWebhook);
+
+  if Assigned(FWebsocket) then
+    FreeAndNil(FWebsocket);
+
+  if Assigned(FRabbitmq) then
+    FreeAndNil(FRabbitmq);
+
+  if Assigned(FSqs) then
+    FreeAndNil(FSqs);
+
+  if Assigned(FTypebot) then
+    FreeAndNil(FTypebot);
+
+  if Assigned(FSettings) then
+    FreeAndNil(FSettings);
+
+  if Assigned(FQrcode) then
+    FreeAndNil(FQrcode);
+
+  inherited;
+end;
+
+function TRespCreateInstance.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TRespCreateInstance.FromJsonString(const AJsonString: string): TRespCreateInstance;
+begin
+  Result := TJson.JsonToObject<TRespCreateInstance>(AJsonString);
+end;
+
+end.
+

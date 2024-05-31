@@ -1,0 +1,54 @@
+package EvolutionAPI;
+
+{$R *.res}
+{$R 'TDTEvolutionAPI.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  RESTComponents,
+  vcl,
+  vclimg,
+  soaprtl;
+
+contains
+  DTEvolutionAPI in 'DTEvolutionAPI.pas',
+  CreateInstance in 'dto\instance\CreateInstance.pas',
+  RespCreateInstance in 'dto\instance\RespCreateInstance.pas',
+  UntToken in 'dto\UntToken.pas',
+  fetchInstances in 'dto\instance\fetchInstances.pas',
+  RespfetchInstances in 'dto\instance\RespfetchInstances.pas',
+  InstanceConnect in 'dto\instance\InstanceConnect.pas',
+  RespInstanceConnect in 'dto\instance\RespInstanceConnect.pas',
+  ConnectionState in 'dto\instance\ConnectionState.pas',
+  RespConnectionState in 'dto\instance\RespConnectionState.pas',
+  RespSendText in 'dto\mensagem\RespSendText.pas',
+  SendText in 'dto\mensagem\SendText.pas',
+  UEmojisEvo in 'dto\emojis\UEmojisEvo.pas',
+  UqrCodeEvo in 'QrCode\UqrCodeEvo.pas' {FrmqrCodeEvo};
+
+end.

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2024/03/07 09:42:04.000.597,=rtl.dcp</Transaction>
+    <Transaction>2024/04/08 11:11:21.000.729,=rtl.dcp</Transaction>
+    <Transaction>2024/04/08 11:11:42.000.714,C:\Users\tiago\OneDrive\Documentos\Embarcadero\Studio\Projects\Package1.dproj=C:\Users\tiago\OneDrive\Documentos\Embarcadero\Studio\Projects\DTEvolutionAPI.dproj</Transaction>
+    <Transaction>2024/04/08 11:13:05.000.448,=D:\Dropbox\Componentes\DTEvolutionAPI\DTEvolutionAPI.pas</Transaction>
+    <Transaction>2024/04/08 11:13:30.000.515,C:\Users\tiago\OneDrive\Documentos\Embarcadero\Studio\Projects\DTEvolutionAPI.dproj=D:\Dropbox\Componentes\DTEvolutionAPI\EvolutionAPI.dproj</Transaction>
+    <Transaction>2024/04/08 14:35:37.000.985,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\CreateInstance.pas</Transaction>
+    <Transaction>2024/04/08 14:35:38.000.015,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\RespCreateInstance.pas</Transaction>
+    <Transaction>2024/04/08 14:43:15.000.890,=RESTComponents.dcp</Transaction>
+    <Transaction>2024/04/08 15:06:01.000.983,=D:\Dropbox\Componentes\DTEvolutionAPI\Unit1.pas</Transaction>
+    <Transaction>2024/04/08 15:06:26.000.154,D:\Dropbox\Componentes\DTEvolutionAPI\Unit1.pas=D:\Dropbox\Componentes\DTEvolutionAPI\UntToken.pas</Transaction>
+    <Transaction>2024/04/08 15:06:33.000.621,D:\Dropbox\Componentes\DTEvolutionAPI\UntToken.pas=D:\Dropbox\Componentes\DTEvolutionAPI\dto\UntToken.pas</Transaction>
+    <Transaction>2024/04/08 15:41:57.000.657,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\fetchInstances.pas</Transaction>
+    <Transaction>2024/04/08 15:41:57.000.667,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\RespfetchInstances.pas</Transaction>
+    <Transaction>2024/04/08 16:08:23.000.291,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\InstanceConnect.pas</Transaction>
+    <Transaction>2024/04/08 16:08:23.000.301,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\RespInstanceConnect.pas</Transaction>
+    <Transaction>2024/04/08 18:10:22.000.114,=vcl.dcp</Transaction>
+    <Transaction>2024/04/08 18:31:08.000.824,=vclimg.dcp</Transaction>
+    <Transaction>2024/04/08 18:31:08.000.833,=soaprtl.dcp</Transaction>
+    <Transaction>2024/04/09 08:34:54.000.209,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\instance\ConnectionState.pas</Transaction>
+    <Transaction>2024/04/09 08:34:54.000.222,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\instance\RespConnectionState.pas</Transaction>
+    <Transaction>2024/04/09 10:19:45.000.309,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\mensagem\SendText.pas</Transaction>
+    <Transaction>2024/04/09 10:19:45.000.294,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\mensagem\RespSendText.pas</Transaction>
+    <Transaction>2024/04/09 15:05:03.000.006,=D:\Dropbox\Componentes\DTEvolutionAPI\Unit1.pas</Transaction>
+    <Transaction>2024/04/09 15:05:28.000.564,D:\Dropbox\Componentes\DTEvolutionAPI\UEmojis.pas=D:\Dropbox\Componentes\DTEvolutionAPI\Unit1.pas</Transaction>
+    <Transaction>2024/04/09 15:05:38.000.247,D:\Dropbox\Componentes\DTEvolutionAPI\dto\emojis\UEmojis.pas=D:\Dropbox\Componentes\DTEvolutionAPI\UEmojis.pas</Transaction>
+    <Transaction>2024/04/09 15:16:28.000.464,D:\Dropbox\Componentes\DTEvolutionAPI\dto\emojis\UEmojisEvo.pas=D:\Dropbox\Componentes\DTEvolutionAPI\dto\emojis\UEmojis.pas</Transaction>
+    <Transaction>2024/04/09 21:04:28.000.048,=D:\Dropbox\Componentes\DTEvolutionAPI\QrCode\UqrCodeWpp.pas</Transaction>
+    <Transaction>2024/04/09 21:04:44.000.925,D:\Dropbox\Componentes\DTEvolutionAPI\QrCode\UqrCodeWpp.pas=D:\Dropbox\Componentes\DTEvolutionAPI\QrCode\UqrCodeEvo.pas</Transaction>
+    <Transaction>2024/04/09 21:04:44.000.925,D:\Dropbox\Componentes\DTEvolutionAPI\QrCode\UqrCodeWpp.dfm=D:\Dropbox\Componentes\DTEvolutionAPI\QrCode\UqrCodeEvo.dfm</Transaction>
+    <Transaction>2024/04/18 10:29:54.000.448,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\contacts\RespContacts.pas</Transaction>
+    <Transaction>2024/04/18 10:29:54.000.417,=D:\Dropbox\Componentes\DTEvolutionAPI\dto\contacts\Contacts.pas</Transaction>
+    <Transaction>2024/04/18 11:17:29.000.287,=IndyProtocols.dcp</Transaction>
+    <Transaction>2024/04/18 11:17:29.000.287,=IndySystem.dcp</Transaction>
+    <Transaction>2024/04/18 11:17:29.000.298,=IndyCore.dcp</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="dto"/>
+    <File Path="dto\contacts"/>
+    <File Path="dto\contacts\Contacts.pas"/>
+    <File Path="dto\contacts\RespContacts.pas"/>
+    <File Path="dto\emojis"/>
+    <File Path="dto\emojis\UEmojisEvo.pas"/>
+    <File Path="dto\instance"/>
+    <File Path="dto\instance\ConnectionState.pas"/>
+    <File Path="dto\instance\CreateInstance.pas"/>
+    <File Path="dto\instance\fetchInstances.pas"/>
+    <File Path="dto\instance\InstanceConnect.pas"/>
+    <File Path="dto\instance\RespConnectionState.pas"/>
+    <File Path="dto\instance\RespCreateInstance.pas"/>
+    <File Path="dto\instance\RespfetchInstances.pas"/>
+    <File Path="dto\instance\RespInstanceConnect.pas"/>
+    <File Path="dto\mensagem"/>
+    <File Path="dto\mensagem\RespSendText.pas"/>
+    <File Path="dto\mensagem\SendText.pas"/>
+    <File Path="dto\UntToken.pas"/>
+    <File Path="QrCode"/>
+    <File Path="QrCode\UqrCodeEvo.pas"/>
+    <File Path="QrCode\UqrCodeEvo.dfm"/>
+    <File Path="DTEvolutionAPI.pas"/>
+    <File Path="TDTEvolutionAPI.dcr"/>
+    <File Path="RESTComponents.dcp"/>
+    <File Path="rtl.dcp"/>
+    <File Path="soaprtl.dcp"/>
+    <File Path="vcl.dcp"/>
+    <File Path="vclimg.dcp"/>
+  </ProjectSortOrder>
+</BorlandProject>

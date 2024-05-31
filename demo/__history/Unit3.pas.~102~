@@ -1,0 +1,260 @@
+unit Unit3;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls, DTEvolutionAPI, system.Net.HttpClient,jpeg, Vcl.ComCtrls,
+  Vcl.DBCGrids, Data.DB, Datasnap.DBClient, Vcl.DBCtrls;
+
+type
+  TForm3 = class(TForm)
+    _lbl2: TLabel;
+    _lbl3: TLabel;
+    _lbl4: TLabel;
+    _edtUrl: TEdit;
+    _edtInstancia: TEdit;
+    _edtKey: TEdit;
+    mRet: TMemo;
+    GroupBox1: TGroupBox;
+    _btn7: TButton;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    GroupBox2: TGroupBox;
+    Button7: TButton;
+    Button9: TButton;
+    OpenDialog1: TOpenDialog;
+    Button10: TButton;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    txtPhone: TEdit;
+    txtMsg: TEdit;
+    txt_file: TEdit;
+    Button8: TButton;
+    Panel1: TPanel;
+    ScrollBox1: TScrollBox;
+    Button11: TButton;
+    DTEvolutionAPI1: TDTEvolutionAPI;
+    Button12: TButton;
+    DBCtrlGrid1: TDBCtrlGrid;
+    cdscontato: TClientDataSet;
+    dsContato: TDataSource;
+    cdscontatoCONTATO: TStringField;
+    cdscontatoFOTO: TBlobField;
+    DBImage1: TDBImage;
+    DBText1: TDBText;
+    cdscontatoTEL: TStringField;
+    DBText2: TDBText;
+    Label1: TLabel;
+    Label5: TLabel;
+    procedure _btn7Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button10Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
+  private
+    procedure configuraComponente;
+    procedure LoadImageFromURL(const AURL: string; out ABlobStream: TMemoryStream);
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+
+implementation
+
+{$R *.dfm}
+
+{ TForm3 }
+
+procedure TForm3.LoadImageFromURL(const AURL: string; out ABlobStream: TMemoryStream);
+var
+  HttpClient: THttpClient;
+  Response: IHTTPResponse;
+begin
+  HttpClient := THttpClient.Create;
+  ABlobStream := TMemoryStream.Create;
+  try
+    try
+      Response := HttpClient.Get(AURL, ABlobStream);
+      ABlobStream.Position := 0;
+    except
+      // Trate qualquer exceção aqui
+    end;
+  finally
+    HttpClient.Free;
+  end;
+end;
+
+procedure TForm3.Button10Click(Sender: TObject);
+begin
+   if txt_file.Text = '' then
+   begin
+        ShowMessage('selecione um documento');
+        exit;
+   end;
+    configuraComponente;
+   if DTEvolutionAPI1.SendDocument(txtPhone.Text,txtMsg.Text,txt_file.Text) then
+   mRet.Lines.Text := 'Documento enviado com sucesso';
+end;
+
+procedure TForm3.Button11Click(Sender: TObject);
+begin
+     configuraComponente;
+     DTEvolutionAPI1.ListaEmojis;
+end;
+
+procedure TForm3.Button12Click(Sender: TObject);
+var
+  i           : Integer;
+  ImageStream : TMemoryStream;
+begin
+     configuraComponente;
+
+     IF cdscontato.Active then
+       cdscontato.EmptyDataSet
+     ELSE
+       cdscontato.CreateDataSet;
+
+     if DTEvolutionAPI1.ListContacts then
+      for i := 0 to pred( DTEvolutionAPI1.ListaContatos.Count ) do
+      begin
+           mRet.Lines.Add('Nome: '      + DTEvolutionAPI1.ListaContatos[i].pushName);
+           mRet.Lines.Add('id: '        + Copy( DTEvolutionAPI1.ListaContatos[i].id,3,11));
+           mRet.Lines.Add('instancia: ' + DTEvolutionAPI1.ListaContatos[i].owner);
+           mRet.Lines.Add('IMG: '       + DTEvolutionAPI1.ListaContatos[i].profilePictureUrl);
+           mRet.Lines.Add( StringOfChar('=',30));
+
+           LoadImageFromURL(DTEvolutionAPI1.ListaContatos[i].profilePictureUrl, ImageStream);
+
+           cdscontato.Append;
+           TBlobField(cdscontatoFOTO).LoadFromStream(ImageStream);
+           cdscontatoCONTATO.AsString := DTEvolutionAPI1.ListaContatos[i].pushName;
+           cdscontatoTEL.AsString     := Copy( DTEvolutionAPI1.ListaContatos[i].id,3,11);
+           cdscontato.Post;
+
+           if i = 10 then
+           exit;
+      end;
+
+end;
+
+procedure TForm3.Button1Click(Sender: TObject);
+begin
+    configuraComponente;
+
+    if DTEvolutionAPI1.ConnectInstace then
+    mRet.Lines.Add( DTEvolutionAPI1.RespInstanceConnect.base64 );
+
+end;
+
+procedure TForm3.Button2Click(Sender: TObject);
+begin
+    configuraComponente;
+
+     if DTEvolutionAPI1.fetchInstances then
+       mRet.Lines.Add('Instancia já existe')
+     else
+       mRet.Lines.Add('Instancia Não existe');
+end;
+
+procedure TForm3.Button3Click(Sender: TObject);
+begin
+   configuraComponente;
+
+   if DTEvolutionAPI1.ConnectionState then
+    mRet.Lines.Add( DTEvolutionAPI1.RespConnectionState.instance.state );
+end;
+
+procedure TForm3.Button4Click(Sender: TObject);
+begin
+      configuraComponente;
+      if DTEvolutionAPI1.LogoutInstance then
+       mRet.Lines.Text := 'Logout efetuado com sucesso'
+      else
+       mRet.Lines.Text := '';
+end;
+
+procedure TForm3.Button5Click(Sender: TObject);
+begin
+      configuraComponente;
+      if DTEvolutionAPI1.RestartInstance then
+       mRet.Lines.Text := 'Restart efetuado com sucesso'
+      else
+       mRet.Lines.Text := '';
+end;
+
+procedure TForm3.Button6Click(Sender: TObject);
+begin
+      configuraComponente;
+      if DTEvolutionAPI1.DeleteInstance then
+       mRet.Lines.Text := 'Instancia Deletada com sucesso'
+      else
+       mRet.Lines.Text := '';
+end;
+
+procedure TForm3.Button7Click(Sender: TObject);
+begin
+     configuraComponente;
+     if DTEvolutionAPI1.SendText(txtPhone.Text,txtMsg.Text) then
+     if DTEvolutionAPI1.RespSendText <> nil then
+     mRet.Lines.Text := 'Status: ' + DTEvolutionAPI1.RespSendText.status;
+end;
+
+procedure TForm3.Button8Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+  begin
+   txt_file.Text := OpenDialog1.FileName;
+  end;
+end;
+
+procedure TForm3.Button9Click(Sender: TObject);
+begin
+   if txt_file.Text = '' then
+   begin
+        ShowMessage('selecione uma imagem');
+        exit;
+   end;
+   configuraComponente;
+   if DTEvolutionAPI1.SendImagem(txtPhone.Text,txtMsg.Text,txt_file.Text) then
+   mRet.Lines.Text := 'Imagem enviada com sucesso';
+
+end;
+
+procedure TForm3.configuraComponente;
+begin
+    DTEvolutionAPI1.BaseURL        := _edtUrl.Text;
+    DTEvolutionAPI1.Key            := _edtKey.Text;
+    DTEvolutionAPI1.Instancia      := _edtInstancia.Text;
+    DTEvolutionAPI1.Form           := Self;
+    DTEvolutionAPI1.EmojiScrollBox := ScrollBox1;
+    DTEvolutionAPI1.EmojiComponent := txtMsg;
+
+    mRet.Lines.Clear;
+end;
+
+procedure TForm3._btn7Click(Sender: TObject);
+begin
+     configuraComponente;
+
+     if DTEvolutionAPI1.CreateInstance then
+     mRet.Lines.Add( DTEvolutionAPI1.RespCreateInstance.instance.status );
+end;
+
+end.

@@ -1,0 +1,100 @@
+unit fetchInstances;
+
+interface
+  uses 
+    RespfetchInstances,
+    System.SysUtils,
+    Generics.Collections,
+    REST.Json.Types,
+    Rest.Json;
+
+type
+
+  TFetchInstances = class
+  private
+    FInstanceName: string;
+    FQrcode      : Boolean;
+    FToken       : string;
+
+  public
+    property instanceName : string             read FInstanceName write FInstanceName;
+    property qrcode       : Boolean            read FQrcode       write FQrcode;
+    property token        : string             read FToken        write FToken;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TFetchInstances;
+    function APIExecute(BaseURL : string; Key : string; instancia : String): boolean;
+  end;
+
+implementation
+  uses 
+    System.Classes,
+    System.NetEncoding,
+    System.NetConsts,
+    System.Net.URLClient,
+    System.Net.HttpClient,
+    System.Net.HttpClientComponent;
+
+{TFetchInstances}
+function TFetchInstances.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TFetchInstances.FromJsonString(const AJsonString: string): TFetchInstances;
+begin
+  Result := TJson.JsonToObject<TFetchInstances>(AJsonString);
+end;
+
+function TFetchInstances.APIExecute(BaseURL : string; Key : string; instancia : String): boolean;
+var
+  HttpClient   : THttpClient;
+  LResponse    : IHttpResponse;
+  RequestBody  : TStringStream;
+  xURL_EXECUTE : string;
+  json         : String;
+  tk           : TToken;
+begin
+    tk := TToken.Create;
+    xURL_EXECUTE     := BaseURL + '/instance/fetchInstances';
+    FResponseMessage := '';
+    HttpClient       := THTTPClient.Create;
+    HttpClient.ContentType := 'application/json';
+    json             :=
+                      ' { ' +
+                      ' "instanceName": "'+Instancia+'", '    +
+                      ' "token": "'+ tk.GenerateToken +'", '   +
+                      ' "qrcode": true ' +
+                      ' }';
+  try
+    {Add Body}
+    RequestBody := TStringStream.Create(json);
+
+    LResponse   := HttpClient.Post( xURL_EXECUTE,
+                                   RequestBody,nil,
+
+      TNetHeaders.Create(
+    {Add Headers}
+      TNameValuePair.Create('apikey', Key)));
+
+    {Execute method POST and return instance of TRespCreateInstance}
+    FRespCreateInstance := TRespCreateInstance.FromJsonString(LResponse.ContentAsString);
+
+    Result := LResponse.StatusCode = 200;
+
+
+    if not LResponse.StatusCode in [200,201] then
+     raise Exception.Create( LResponse.ContentAsString );
+  except
+    on E:Exception do
+    begin
+      Result := False;
+      FResponseMessage := E.Message;
+      raise Exception.Create('Error Method TCreateInstance.APIExecute'+ sLineBreak + E.Message);
+    end;
+  end;
+  if Assigned(tk) then
+  FreeAndNil(tk);
+end;
+
+end.

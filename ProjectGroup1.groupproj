@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{56E5D185-25BE-4776-9F5D-754813401866}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="EvolutionAPI.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="demo\Demo.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="EvolutionAPI">
+        <MSBuild Projects="EvolutionAPI.dproj"/>
+    </Target>
+    <Target Name="EvolutionAPI:Clean">
+        <MSBuild Projects="EvolutionAPI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EvolutionAPI:Make">
+        <MSBuild Projects="EvolutionAPI.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Demo">
+        <MSBuild Projects="demo\Demo.dproj"/>
+    </Target>
+    <Target Name="Demo:Clean">
+        <MSBuild Projects="demo\Demo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Demo:Make">
+        <MSBuild Projects="demo\Demo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="EvolutionAPI;Demo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="EvolutionAPI:Clean;Demo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="EvolutionAPI:Make;Demo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
