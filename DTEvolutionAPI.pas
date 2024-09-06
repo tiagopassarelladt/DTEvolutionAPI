@@ -19,6 +19,8 @@ uses
   Json,
   Winapi.Windows, RespContacts, System.Generics.Collections;
 
+ type TVersaoAPI = (tpverAnteriores, tpver200, tpver201);
+
 type
 
   TListaContatos = class
@@ -35,7 +37,6 @@ type
 
   end;
 
-
 type
   TDTEvolutionAPI = class(TComponent)
   private
@@ -50,6 +51,7 @@ type
     FRespSendText: TRespSendText;
     FEmojiScrollBox: TScrollBox;
     FEmojiComponent: TComponent;
+    FVersaoAPI: TVersaoAPI;
 
 
     procedure Base64ToImage(const Base64String: string;Owner: TComponent);
@@ -58,11 +60,14 @@ type
     function FileToBase64(Arquivo: String): String;
     function StreamToBase64(STream: TMemoryStream): String;
     function DetectFileType(const filePath: string): string;
+    procedure SetVersaoAPI(const Value: TVersaoAPI);
+    function GetMimeType(const FileName: string): string;
 
   protected
 
   public
    ListaContatos:TList<TListaContatos>;
+   function VersaoAPIFromString(const AStr: string): TVersaoAPI;
    // INSTANCIA
    function CreateInstance  : boolean;
    function fetchInstances  : boolean;
@@ -100,6 +105,8 @@ type
    property qrCode             : TImage               read FqrCode              write FqrCode;
    property Form               : TForm                read FForm                write FForm;
    property EmojiComponent     : TComponent           read FEmojiComponent      write FEmojiComponent;
+
+   property VersaoAPI          : TVersaoAPI           read FVersaoAPI           write SetVersaoAPI;
   end;
 
 procedure Register;
@@ -119,6 +126,18 @@ begin
 end;
 
 { TDTEvolutionAPI }
+
+function TDTEvolutionAPI.VersaoAPIFromString(const AStr: string): TVersaoAPI;
+begin
+  if AStr = 'tpverAnteriores' then
+    Result := tpverAnteriores
+  else if AStr = 'tpver200' then
+    Result := tpver200
+  else if AStr = 'tpver201' then
+    Result := tpver201
+  else
+    raise Exception.Create('Versão API desconhecida: ' + AStr);
+end;
 
 Function TDTEvolutionAPI.GetTempDir: string;
 var
@@ -369,19 +388,35 @@ begin
      if ConnectionState then
      begin
           imgB64 := StringReplace(FileToBase64(CaminhoDOC), #$D#$A, '', [rfReplaceAll]);
-          json  :=
-          ' { '  +
-          ' "number": "'+Fone+'", '  +
-          ' "options": { '  +
-          ' "delay": 1200, '  +
-          ' "presence": "composing" '  +
-          ' }, '  +
-          ' "mediaMessage": { '  +
-          ' "mediatype": "'+DetectFileType(CaminhoDOC)+'", '  +
-          ' "fileName": "'+ ExtractFileName(CaminhoDOC) +'", ' +
-          ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
-          ' "media": "'+ imgB64 +'" } '  +
-          ' } ';
+          if FVersaoAPI = tpverAnteriores then
+          begin
+              json  :=
+              ' { '  +
+              ' "number": "'+Fone+'", '  +
+              ' "options": { '  +
+              ' "delay": 1200, '  +
+              ' "presence": "composing" '  +
+              ' }, '  +
+              ' "mediaMessage": { '  +
+              ' "mediatype": "'+DetectFileType(CaminhoDOC)+'", '  +
+              ' "fileName": "'+ ExtractFileName(CaminhoDOC) +'", ' +
+              ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
+              ' "media": "'+ imgB64 +'" } '  +
+              ' } ';
+          end;
+
+          if FVersaoAPI in [tpver200,tpver201] then
+          begin
+              json  :=
+                ' { '  +
+                ' "number": "'+Fone+'", '  +
+                ' "mediatype": "'+DetectFileType(CaminhoDOC)+'", '  +
+                ' "mimetype": "'+ GetMimeType(ExtractFileName(CaminhoDOC)) +'", ' +
+                ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
+                ' "media": "'+ imgB64 +'", '  +
+                ' "fileName": "'+ ExtractFileName(CaminhoDOC) +'" ' +
+                ' } ';
+          end;
 
           xURL_EXECUTE           := BaseURL + '/message/sendMedia/' + FInstancia;
           HttpClient             := THTTPClient.Create;
@@ -431,18 +466,35 @@ begin
      if ConnectionState then
      begin
           imgB64 := StringReplace(FileToBase64(CaminhoIMG), #$D#$A, '', [rfReplaceAll]);
-          json  :=
-          ' { '  +
-          ' "number": "'+Fone+'", '  +
-          ' "options": { '  +
-          ' "delay": 1200, '  +
-          ' "presence": "composing" '  +
-          ' }, '  +
-          ' "mediaMessage": { '  +
-          ' "mediatype": "image", '  +
-          ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
-          ' "media": "'+ imgB64 +'" } '  +
-          ' } ';
+
+          if FVersaoAPI = tpverAnteriores then
+          begin
+                json  :=
+                ' { '  +
+                ' "number": "'+Fone+'", '  +
+                ' "options": { '  +
+                ' "delay": 1200, '  +
+                ' "presence": "composing" '  +
+                ' }, '  +
+                ' "mediaMessage": { '  +
+                ' "mediatype": "image", '  +
+                ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
+                ' "media": "'+ imgB64 +'" } '  +
+                ' } ';
+          end;
+
+          if FVersaoAPI in [ tpver200, tpver201 ] then
+          begin
+             json  :=
+                ' { '  +
+                ' "number": "'+Fone+'", '  +
+                ' "mediatype": "image", '  +
+                ' "mimetype": "'+ GetMimeType(ExtractFileName(CaminhoIMG)) +'", ' +
+                ' "caption": "'+UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) +'", '  +
+                ' "media": "'+ imgB64 +'", '  +
+                ' "fileName": "'+ ExtractFileName(CaminhoIMG) +'" ' +
+                ' } ';
+          end;
 
           xURL_EXECUTE           := BaseURL + '/message/sendMedia/' + FInstancia;
           HttpClient             := THTTPClient.Create;
@@ -490,7 +542,7 @@ begin
      if ConnectionState then
      begin
          Req           := TSendText.Create;
-         Result        := Req.APIExecute(FBaseURL, FKey, FInstancia, Fone, Mensagem);
+         Result        := Req.APIExecute(FBaseURL, FKey, FInstancia, Fone, Mensagem, FVersaoAPI);
          FRespSendText := Req.RespSendText;
 
          FreeAndNil(Req);
@@ -501,6 +553,11 @@ begin
 
    end;
 
+end;
+
+procedure TDTEvolutionAPI.SetVersaoAPI(const Value: TVersaoAPI);
+begin
+  FVersaoAPI := Value;
 end;
 
 procedure TDTEvolutionAPI.Base64ToImage(const Base64String: string;Owner: TComponent);
@@ -692,5 +749,130 @@ begin
 
       FreeAndNil(Req);
 end;
+
+function TDTEvolutionAPI.GetMimeType(const FileName: string): string;
+var
+  Extension: string;
+begin
+  Extension := ExtractFileExt(FileName).ToLower;
+
+  if Extension = '.txt' then
+    Result := 'text/plain'
+  else if Extension = '.html' then
+    Result := 'text/html'
+  else if Extension = '.htm' then
+    Result := 'text/html'
+  else if Extension = '.css' then
+    Result := 'text/css'
+  else if Extension = '.csv' then
+    Result := 'text/csv'
+  else if Extension = '.xml' then
+    Result := 'application/xml'
+  else if Extension = '.json' then
+    Result := 'application/json'
+  else if Extension = '.pdf' then
+    Result := 'application/pdf'
+  else if Extension = '.zip' then
+    Result := 'application/zip'
+  else if Extension = '.gzip' then
+    Result := 'application/gzip'
+  else if Extension = '.tar' then
+    Result := 'application/x-tar'
+  else if Extension = '.rar' then
+    Result := 'application/x-rar-compressed'
+  else if Extension = '.7z' then
+    Result := 'application/x-7z-compressed'
+  else if Extension = '.jpg' then
+    Result := 'image/jpeg'
+  else if Extension = '.jpeg' then
+    Result := 'image/jpeg'
+  else if Extension = '.png' then
+    Result := 'image/png'
+  else if Extension = '.gif' then
+    Result := 'image/gif'
+  else if Extension = '.bmp' then
+    Result := 'image/bmp'
+  else if Extension = '.tiff' then
+    Result := 'image/tiff'
+  else if Extension = '.tif' then
+    Result := 'image/tiff'
+  else if Extension = '.ico' then
+    Result := 'image/x-icon'
+  else if Extension = '.svg' then
+    Result := 'image/svg+xml'
+  else if Extension = '.webp' then
+    Result := 'image/webp'
+  else if Extension = '.mp4' then
+    Result := 'video/mp4'
+  else if Extension = '.avi' then
+    Result := 'video/x-msvideo'
+  else if Extension = '.mov' then
+    Result := 'video/quicktime'
+  else if Extension = '.wmv' then
+    Result := 'video/x-ms-wmv'
+  else if Extension = '.mkv' then
+    Result := 'video/x-matroska'
+  else if Extension = '.mp3' then
+    Result := 'audio/mpeg'
+  else if Extension = '.wav' then
+    Result := 'audio/wav'
+  else if Extension = '.ogg' then
+    Result := 'audio/ogg'
+  else if Extension = '.flac' then
+    Result := 'audio/flac'
+  else if Extension = '.mid' then
+    Result := 'audio/midi'
+  else if Extension = '.midi' then
+    Result := 'audio/midi'
+  else if Extension = '.rtf' then
+    Result := 'application/rtf'
+  else if Extension = '.doc' then
+    Result := 'application/msword'
+  else if Extension = '.docx' then
+    Result := 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  else if Extension = '.ppt' then
+    Result := 'application/vnd.ms-powerpoint'
+  else if Extension = '.pptx' then
+    Result := 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  else if Extension = '.xls' then
+    Result := 'application/vnd.ms-excel'
+  else if Extension = '.xlsx' then
+    Result := 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  else if Extension = '.psd' then
+    Result := 'image/vnd.adobe.photoshop'
+  else if Extension = '.ai' then
+    Result := 'application/postscript'
+  else if Extension = '.eot' then
+    Result := 'application/vnd.ms-fontobject'
+  else if Extension = '.woff' then
+    Result := 'font/woff'
+  else if Extension = '.woff2' then
+    Result := 'font/woff2'
+  else if Extension = '.ttf' then
+    Result := 'font/ttf'
+  else if Extension = '.otf' then
+    Result := 'font/otf'
+  else if Extension = '.jar' then
+    Result := 'application/java-archive'
+  else if Extension = '.apk' then
+    Result := 'application/vnd.android.package-archive'
+  else if Extension = '.bat' then
+    Result := 'application/x-bat'
+  else if Extension = '.sh' then
+    Result := 'application/x-sh'
+  else if Extension = '.pl' then
+    Result := 'application/x-perl'
+  else if Extension = '.py' then
+    Result := 'text/x-python'
+  else if Extension = '.rb' then
+    Result := 'text/x-ruby'
+  else if Extension = '.cpp' then
+    Result := 'text/x-c++'
+  else if Extension = '.h' then
+    Result := 'text/x-c'
+  else
+    Result := 'application/octet-stream'; // Default MIME type for unknown file types
+end;
+
 
 end.

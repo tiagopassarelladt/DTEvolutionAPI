@@ -23,9 +23,9 @@ type
     pnStatus: TPanel;
     pbPIX: TProgressBar;
     Timer1: TTimer;
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button2Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FRespConnectionState: TRespConnectionState;
     FKey: string;
@@ -74,8 +74,8 @@ end;
 
 procedure TFrmqrCodeEvo.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Action       := caFree;
-  FrmqrCodeEvo := nil;
+    Action := TCloseAction.caFree;
+    FrmqrCodeEvo := nil;
 end;
 
 procedure TFrmqrCodeEvo.Timer1Timer(Sender: TObject);

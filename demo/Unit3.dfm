@@ -294,7 +294,7 @@ object Form3: TForm3
   object DBCtrlGrid1: TDBCtrlGrid
     Left = 8
     Top = 400
-    Width = 343
+    Width = 339
     Height = 288
     Cursor = crHandPoint
     Color = clWhite
@@ -338,6 +338,7 @@ object Form3: TForm3
     Top = 280
   end
   object DTEvolutionAPI1: TDTEvolutionAPI
+    VersaoAPI = tpver201
     Left = 136
     Top = 280
   end

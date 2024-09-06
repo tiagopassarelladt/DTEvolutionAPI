@@ -6,7 +6,7 @@ interface
     System.SysUtils,
     Generics.Collections,
     REST.Json.Types,
-    Rest.Json;
+    Rest.Json,DTEvolutionAPI;
 
 type
 
@@ -55,7 +55,7 @@ type
 
     function ToJsonString: string;
     class function FromJsonString(const AJsonString: string): TSendText;
-    function APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string): boolean;
+    function APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string; Versao :TVersaoAPI): boolean;
 
   end;
 
@@ -123,7 +123,7 @@ begin
   Result := TJson.JsonToObject<TSendText>(AJsonString);
 end;
 
-function TSendText.APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string): boolean;
+function TSendText.APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string; Versao :TVersaoAPI): boolean;
 var
   HttpClient   : THttpClient;
   LResponse    : IHttpResponse;
@@ -131,11 +131,14 @@ var
   xURL_EXECUTE : string;
   json         : string;
 begin
-    json :=
+   if Versao = tpverAnteriores then
+   begin
+           json :=
     ' { '  +
     ' "number": "' + Fone + '", '  +
-    ' "options": { '  +
+    ' "text": "",'  +
     ' "delay": 0, '  +
+    ' "options": { '  +
     ' "presence": "composing", '  +
     ' "linkPreview": false '  +
     ' }, '  +
@@ -143,6 +146,18 @@ begin
     ' "text": "' + UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) + '" '  +
     ' } '  +
     ' } ';
+
+   end;
+
+   if Versao in [ tpver200, tpver201 ] then
+   begin
+           json :=
+    ' { '  +
+    ' "number": "' + Fone + '", '  +
+    ' "text": "' + UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) + '" '  +
+    ' } ';
+
+   end;
 
 
     xURL_EXECUTE     := BaseURL + '/message/sendtext/' + instancia;

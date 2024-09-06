@@ -1,0 +1,187 @@
+﻿unit SendText;
+
+interface
+  uses
+    RespSendText,
+    System.SysUtils,
+    Generics.Collections,
+    REST.Json.Types,
+    Rest.Json;
+
+
+
+type
+
+  TTextMessage = class
+  private
+    FText: string;
+  public
+    property text : string       read FText write FText;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TTextMessage;
+  end;
+
+  TOptions = class
+  private
+    FDelay: Extended;
+  public
+    property delay : Extended     read FDelay write FDelay;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TOptions;
+  end;
+
+  TSendText = class
+  private
+    FNumber     : string;
+    FOptions    : TOptions;
+    FTextMessage: TTextMessage;
+    // Instance of TRespSendText
+    [JSONMarshalledAttribute(False)]
+    FRespSendText: TRespSendText;
+    // Store Last Response Message from StatusCode
+    [JSONMarshalledAttribute(False)]
+    FResponseMessage: string;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property number      : string       read FNumber      write FNumber;
+    property options     : TOptions     read FOptions     write FOptions;
+    property textMessage : TTextMessage read FTextMessage write FTextMessage;
+    // Instance of TRespSendText
+    property RespSendText: TRespSendText read FRespSendText write FRespSendText;
+    // Get Last Response Message from StatusCode
+    property ResponseMessage: string       read FResponseMessage write FResponseMessage;
+
+    function ToJsonString: string;
+    class function FromJsonString(const AJsonString: string): TSendText;
+    function APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string): boolean;
+
+  end;
+
+implementation
+  uses 
+    System.Classes,
+    System.NetEncoding,
+    System.NetConsts,
+    System.Net.URLClient,
+    System.Net.HttpClient,
+    System.Net.HttpClientComponent;
+
+{TTextMessage}
+function TTextMessage.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TTextMessage.FromJsonString(const AJsonString: string): TTextMessage;
+begin
+  Result := TJson.JsonToObject<TTextMessage>(AJsonString);
+end;
+
+{TOptions}
+function TOptions.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TOptions.FromJsonString(const AJsonString: string): TOptions;
+begin
+  Result := TJson.JsonToObject<TOptions>(AJsonString);
+end;
+
+{TSendText}
+constructor TSendText.Create;
+begin
+  inherited;
+
+  FOptions     := TOptions.Create;
+  FTextMessage := TTextMessage.Create;
+end;
+
+destructor TSendText.Destroy;
+begin
+  if Assigned(FOptions) then
+    FreeAndNil(FOptions);
+
+  if Assigned(FTextMessage) then
+    FreeAndNil(FTextMessage);
+
+  if Assigned(FRespSendText) then
+    FreeAndNil(FRespSendText);
+
+  inherited;
+end;
+
+function TSendText.ToJsonString: string;
+begin
+  Result := TJson.ObjectToJsonString(self);
+end;
+
+class function TSendText.FromJsonString(const AJsonString: string): TSendText;
+begin
+  Result := TJson.JsonToObject<TSendText>(AJsonString);
+end;
+
+function TSendText.APIExecute(BaseURL : string; Key : string; instancia : String;Fone: string; Mensagem: string): boolean;
+var
+  HttpClient   : THttpClient;
+  LResponse    : IHttpResponse;
+  RequestBody  : TStringStream;
+  xURL_EXECUTE : string;
+  json         : string;
+begin
+    json :=
+    ' { '  +
+    ' "number": "' + Fone + '", '  +
+//    ' "text": "",'  +
+//    ' "delay": 0, '  +
+//    ' "options": { '  +
+//    ' "presence": "composing", '  +
+//    ' "linkPreview": false '  +
+//    ' }, '  +
+//    ' "textMessage": { '  +
+    ' "text": "' + UTF8Encode(StringReplace(StringReplace(Mensagem, #$D#$A,'\n', [rfReplaceAll]),#$A,'\n',[rfReplaceAll])) + '" '  +
+//    ' } '  +
+    ' } ';
+
+
+    xURL_EXECUTE     := BaseURL + '/message/sendtext/' + instancia;
+    FResponseMessage := '';
+    HttpClient       := THTTPClient.Create;
+    HttpClient.ContentType := 'application/json';
+    HttpClient.Accept      := '*/*';
+    HttpClient.AcceptEncoding := 'gzip, deflate, br';
+    try
+      try
+        RequestBody := TStringStream.Create(json,TEncoding.UTF8);
+        LResponse   := HttpClient.Post( xURL_EXECUTE,
+                                       RequestBody,nil,
+          TNetHeaders.Create(
+          TNameValuePair.Create('apikey', key)
+                                     ));
+
+        FRespSendText := TRespSendText.FromJsonString(LResponse.ContentAsString);
+
+        Result := LResponse.StatusCode = 201;
+
+
+        if not LResponse.StatusCode in [200,201] then
+         raise Exception.Create( LResponse.ContentAsString );
+      except
+        on E:Exception do
+        begin
+          Result := False;
+          FResponseMessage := E.Message;
+          raise Exception.Create('Error Method TSendText.APIExecute'+ sLineBreak + E.Message);
+        end;
+      end;
+    finally
+       FreeAndNil(RequestBody);
+       FreeAndNil(HttpClient);
+    end;
+end;
+
+end.

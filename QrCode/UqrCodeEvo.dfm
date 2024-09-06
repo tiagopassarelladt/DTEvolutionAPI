@@ -42,8 +42,6 @@ object FrmqrCodeEvo: TFrmqrCodeEvo
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 287
-    ExplicitWidth = 285
   end
   object pbPIX: TProgressBar
     Left = 8

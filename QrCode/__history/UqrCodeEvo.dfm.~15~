@@ -1,0 +1,62 @@
+object FrmqrCodeEvo: TFrmqrCodeEvo
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Conectar dispositivo'
+  ClientHeight = 302
+  ClientWidth = 289
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Position = poScreenCenter
+  TextHeight = 13
+  object Image1: TImage
+    Left = 8
+    Top = 8
+    Width = 273
+    Height = 253
+    Center = True
+    Proportional = True
+  end
+  object Button2: TButton
+    Left = 208
+    Top = 218
+    Width = 41
+    Height = 25
+    Cursor = crHandPoint
+    Caption = 'Status da sess'#227'o'
+    TabOrder = 0
+    Visible = False
+    OnClick = Button2Click
+  end
+  object pnStatus: TPanel
+    Left = 0
+    Top = 288
+    Width = 289
+    Height = 14
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+  end
+  object pbPIX: TProgressBar
+    Left = 8
+    Top = 267
+    Width = 273
+    Height = 16
+    Cursor = crHandPoint
+    Style = pbstMarquee
+    BarColor = clGreen
+    TabOrder = 2
+    StyleElements = []
+  end
+  object Timer1: TTimer
+    Interval = 3000
+    OnTimer = Timer1Timer
+    Left = 136
+    Top = 160
+  end
+end
